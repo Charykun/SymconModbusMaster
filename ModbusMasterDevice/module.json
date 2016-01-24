@@ -1,0 +1,14 @@
+{
+	"id": "{3BD8FD26-AFAC-49D4-A9F0-15DE90A41D26}",
+	"name": "ModBusMasterDevice",
+	"type": 3,
+	"vendor": "ModBus",
+	"aliases": 
+	[
+            "ModBusMaster Device"
+	],
+	"parentRequirements": ["{A3419A88-C83B-49D7-8706-D3AFD596DFBB}"],
+	"childRequirements": [],
+	"implemented": ["{449015FB-6717-4BB6-9F95-F69945CE1272}"],
+	"prefix": "ModBusMaster"
+}

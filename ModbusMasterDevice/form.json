@@ -1,0 +1,20 @@
+{
+     "elements":
+    [
+        { "name": "DataType", "type": "Select", "caption": "Unit",
+            "options": 
+            [
+                { "label": "Coil", "value": 1 },
+                { "label": "Input Discretes", "value": 2 },
+                { "label": "Register", "value": 3 },
+                { "label": "Input Register", "value": 4 }                
+            ]
+        },
+        { "name": "Address", "type": "NumberSpinner", "caption": "Address" }
+    ],
+    "actions":
+    [
+        { "type": "Button", "label": "On", "onClick": "ModBusMaster_WriteCoil($id, true);" },
+	{ "type": "Button", "label": "Off", "onClick": "ModBusMaster_WriteCoil($id, false);" }
+    ]
+}

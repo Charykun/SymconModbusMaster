@@ -1,0 +1,14 @@
+{
+	"id": "{13D6E3BC-9C30-4698-995F-4E566590CD84}",
+	"name": "ModBusMaster",
+	"type": 1,
+	"vendor": "",
+	"aliases": 
+	[
+            "ModBusMaster"
+	],
+	"parentRequirements": [],
+	"childRequirements": ["{449015FB-6717-4BB6-9F95-F69945CE1272}"],
+	"implemented": ["{A3419A88-C83B-49D7-8706-D3AFD596DFBB}"],
+	"prefix": "MBMaster"
+}

@@ -1,0 +1,36 @@
+{
+     "elements":
+    [
+        { "name": "Active", "type": "CheckBox", "caption": "Active" },
+        { "name": "IPAddress", "type": "ValidationTextBox", "caption": "IP-Address" },
+        { "name": "GatewayMode", "type": "Select", "caption": "Mode",
+            "options": 
+            [
+                { "label": "Modbus TCP", "value": 0 },
+		{ "label": "Modbus UDP", "value": 1 }
+            ]
+	},
+        { "name": "DeviceID", "type": "NumberSpinner", "caption": "Device ID" },
+        { "name": "Poller", "type": "IntervalBox", "caption": "milliseconds" },
+        { "type": "Label", "label": "Read Coils Address: (FC 1)" },        
+        { "name": "CoilsReference", "type": "NumberSpinner", "caption": "Reference" },
+        { "name": "CoilsQuantity", "type": "NumberSpinner", "caption": "Quantity" },   
+        { "type": "Label", "label": "Read Input Discretes Address: (FC 2)" },        
+        { "name": "DiscretesReference", "type": "NumberSpinner", "caption": "Reference" },
+        { "name": "DiscretesQuantity", "type": "NumberSpinner", "caption": "Quantity" },  
+        { "type": "Label", "label": "Read Register Address: (FC 3)" },       
+        { "name": "RegistersReference", "type": "NumberSpinner", "caption": "Reference" },
+        { "name": "RegistersQuantity", "type": "NumberSpinner", "caption": "Quantity" },  
+        { "type": "Label", "label": "Read Input Register Address: (FC 4)" },       
+        { "name": "InputRegistersReference", "type": "NumberSpinner", "caption": "Reference" },
+        { "name": "InputRegistersQuantity", "type": "NumberSpinner", "caption": "Quantity" }     
+    ],
+    "status":
+    [
+        { "code": 102, "icon": "active", "caption": "Interface is open" },
+	{ "code": 104, "icon": "inactive", "caption": "Interface is closed" },
+	{ "code": 200, "icon": "error", "caption": "Interface is an error state. Please check message log for more information." },
+        { "code": 201, "icon": "error", "caption": "Invalid IP-Address" }
+    ] 
+  
+}
