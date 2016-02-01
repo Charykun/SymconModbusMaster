@@ -4,13 +4,20 @@
         { "name": "DataType", "type": "Select", "caption": "Unit",
             "options": 
             [
-                { "label": "Coil", "value": 1 },
-                { "label": "Input Discretes", "value": 2 },
-                { "label": "Register", "value": 3 },
-                { "label": "Input Register", "value": 4 }                
+                { "label": "Bit (1Bit)", "value": 0 },
+		{ "label": "Byte (8Bit - Unsigned)", "value": 1 },
+		{ "label": "Word (16Bit - Unsigned)", "value": 2 },
+		{ "label": "DWord (32Bit - Unsiged)", "value": 3 },
+		{ "label": "ShortInt (8Bit - Signed)", "value": 4 },
+		{ "label": "SmallInt (16Bit - Signed)", "value": 5 },
+		{ "label": "Integer (32Bit - Signed)", "value": 6 },
+		{ "label": "Real (32Bit - Signed)", "value": 7 },
+		{ "label": "Int64 (64Bit - Signed)", "value": 8 },
+		{ "label": "Real64 (64Bit - Signed)", "value": 9 }             
             ]
         },
-        { "name": "Address", "type": "NumberSpinner", "caption": "Address" }
+        { "name": "Address", "type": "NumberSpinner", "caption": "Address" },
+        { "name": "ReadOnly", "type": "CheckBox", "caption": "Read Only (Will read discrete inputs/input registers and disable writing)" }
     ],
     "actions":
     [

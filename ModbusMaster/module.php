@@ -24,11 +24,11 @@
             $this->RegisterPropertyInteger("DeviceID", 1);
             $this->RegisterPropertyInteger("Poller", 200);
             $this->RegisterTimer("Poller", 0, "MBMaster_Update(\$_IPS['TARGET']);");           
-            $this->RegisterPropertyInteger("CoilsReference", 0);
+            $this->RegisterPropertyInteger("CoilsReference", 512);
             $this->RegisterPropertyInteger("CoilsQuantity", 0);              
             $this->RegisterPropertyInteger("DiscretesReference", 0);
             $this->RegisterPropertyInteger("DiscretesQuantity", 0);    
-            $this->RegisterPropertyInteger("RegistersReference", 0);
+            $this->RegisterPropertyInteger("RegistersReference", 512);
             $this->RegisterPropertyInteger("RegistersQuantity", 0);    
             $this->RegisterPropertyInteger("InputRegistersReference", 0);
             $this->RegisterPropertyInteger("InputRegistersQuantity", 0);           
@@ -78,7 +78,7 @@
         {
             // Empfangene Daten von der Device Instanz
             $data = json_decode($JSONString);
-            if ( $data->DataID === "{A3419A88-C83B-49D7-8706-D3AFD596DFBB}" )
+            if ( ($data->DataID === "{A3419A88-C83B-49D7-8706-D3AFD596DFBB}") and ($this->ReadPropertyBoolean("Active")) )
             {
                 if ( $data->FC == 5 )
                 {
@@ -96,7 +96,7 @@
          * MBMaster_Update();
          */
         public function Update()
-        {
+        {                                                
             $tstart = microtime(true);            
             include_once(__DIR__ . "/lib/ModbusMaster.php");
             $URL = "http://" . $this->ReadPropertyString("IPAddress");
@@ -121,34 +121,42 @@
             }
             for ($index = 1; $index < $count; $index++) 
             { 
-                $tstartfor = microtime(true);            
+                $tstartfor = microtime(true);           
                 $data = array();
-                // FC 1
+                // FC 1 Rücklesen mehrerer digitaler Ausgänge 
                 if ( $this->ReadPropertyInteger("CoilsQuantity") > 0)            
                 {    
                     try 
-                    {
-                        $recData = $modbus->readCoils($this->ReadPropertyInteger("DeviceID"), $this->ReadPropertyInteger("CoilsReference"), $this->ReadPropertyInteger("CoilsQuantity")); 
+                    {   
+                        if (IPS_SemaphoreEnter("ModbusMaster", 1000))
+                        {
+                            $recData = $modbus->readCoils($this->ReadPropertyInteger("DeviceID"), $this->ReadPropertyInteger("CoilsReference"), $this->ReadPropertyInteger("CoilsQuantity")); 
+                            IPS_SemaphoreLeave("ModbusMaster");
+                        }
                     }
                     catch (Exception $e) 
                     {       
                         $this->SetStatus(200); 
                         trigger_error("ModbusMaster: " . $e->getMessage() . "!", E_USER_ERROR);
                         exit;
-                    }
-                    $Address = $this->ReadPropertyInteger("CoilsReference");
+                    }                    
+                    $Address = $this->ReadPropertyInteger("CoilsReference");    
                     foreach ($recData as $Value) 
                     {                           
-                        $data[1][$Address] = $Value;
+                        $data["FC1"][$Address] = $Value;
                         $Address++;         
                     }                
                 }            
-                // FC 2
+                // FC 2 Lesen mehrerer digitaler Eingänge 
                 if ( $this->ReadPropertyInteger("DiscretesQuantity") > 0)            
                 {    
                     try 
                     {
-                        $recData = $modbus->readInputDiscretes($this->ReadPropertyInteger("DeviceID"), $this->ReadPropertyInteger("DiscretesReference"), $this->ReadPropertyInteger("DiscretesQuantity")); 
+                        if (IPS_SemaphoreEnter("ModbusMaster", 1000))
+                        {
+                            $recData = $modbus->readInputDiscretes($this->ReadPropertyInteger("DeviceID"), $this->ReadPropertyInteger("DiscretesReference"), $this->ReadPropertyInteger("DiscretesQuantity")); 
+                            IPS_SemaphoreLeave("ModbusMaster");
+                        }
                     }
                     catch (Exception $e) 
                     {       
@@ -159,16 +167,20 @@
                     $Address = $this->ReadPropertyInteger("DiscretesReference");
                     foreach ($recData as $Value) 
                     {                           
-                        $data[2][$Address] = $Value;
+                        $data["FC2"][$Address] = $Value;
                         $Address++;         
                     }                
                 }  
-                // FC 3
+                // FC 3 Lesen mehrerer analoger Eingänge(und Ausgänge) 
                 if ( $this->ReadPropertyInteger("RegistersQuantity") > 0)
                 {  
                     try 
                     {
-                        $recData = $modbus->readMultipleRegisters($this->ReadPropertyInteger("DeviceID"), $this->ReadPropertyInteger("RegistersReference"), $this->ReadPropertyInteger("RegistersQuantity")); 
+                        if (IPS_SemaphoreEnter("ModbusMaster", 1000))
+                        {
+                            $recData = $modbus->readMultipleRegisters($this->ReadPropertyInteger("DeviceID"), $this->ReadPropertyInteger("RegistersReference"), $this->ReadPropertyInteger("RegistersQuantity")); 
+                            IPS_SemaphoreLeave("ModbusMaster");
+                        }
                     }
                     catch (Exception $e) 
                     {       
@@ -177,19 +189,23 @@
                         exit;
                     }                    
                     $Address = $this->ReadPropertyInteger("RegistersReference");
-                    $Values = array_chunk($recData, count($recData) / $this->ReadPropertyInteger("RegistersQuantity") );
+                    $Values = array_chunk($recData, count($recData) / $this->ReadPropertyInteger("RegistersQuantity") ); 
                     foreach ($Values as $Value) 
                     {                      
-                        $data[3][$Address] = $Value;
+                        $data["FC3"][$Address] = $Value;
                         $Address++;
                     }
                 }
-                // FC 4
+                // FC 4 Lesen mehrerer analoger Eingänge(und Ausgänge) 
                 if ( $this->ReadPropertyInteger("InputRegistersQuantity") > 0)
                 {  
                     try 
                     {
-                        $recData = $modbus->readMultipleInputRegisters($this->ReadPropertyInteger("DeviceID"), $this->ReadPropertyInteger("InputRegistersReference"), $this->ReadPropertyInteger("InputRegistersQuantity")); 
+                        if (IPS_SemaphoreEnter("ModbusMaster", 1000))
+                        {
+                            $recData = $modbus->readMultipleInputRegisters($this->ReadPropertyInteger("DeviceID"), $this->ReadPropertyInteger("InputRegistersReference"), $this->ReadPropertyInteger("InputRegistersQuantity")); 
+                            IPS_SemaphoreLeave("ModbusMaster");
+                        } 
                     }
                     catch (Exception $e) 
                     {       
@@ -198,16 +214,15 @@
                         exit;
                     }
                     $Address = $this->ReadPropertyInteger("InputRegistersReference");
-                    $Values = array_chunk($recData, count($recData) / $this->ReadPropertyInteger("RegistersQuantity") );
+                    $Values = array_chunk($recData, count($recData) / $this->ReadPropertyInteger("InputRegistersQuantity") ); 
                     foreach ($Values as $Value) 
                     {                      
-                        $data[4][$Address] = $Value;
+                        $data["FC4"][$Address] = $Value;
                         $Address++;
                     }
-                }             
-                $this->SendDataToChildren(json_encode(Array("DataID" => "{449015FB-6717-4BB6-9F95-F69945CE1272}", "Buffer" => json_encode($data))));                        
+                } 
+                $this->SendDataToChildren(json_encode(Array("DataID" => "{449015FB-6717-4BB6-9F95-F69945CE1272}", "Buffer" => json_encode($data))));                       
                 $this->SetStatus(102); 
-                //$this->Log(number_format(((microtime(true)-$tstart)*1000),2) . ' ms');
                 if ( $this->ReadPropertyInteger("Poller") < 1000)
                 {
                     IPS_Sleep($this->ReadPropertyInteger("Poller") - ((microtime(true)-$tstartfor) * 1000));           
@@ -262,7 +277,11 @@
             //FC 5
             try 
             {
-                $modbus->writeSingleCoil($UnitId, $Reference, array($Data));
+                if (IPS_SemaphoreEnter("ModbusMaster", 1000))
+                {
+                    $modbus->writeSingleCoil($UnitId, $Reference, array($Data));
+                    IPS_SemaphoreLeave("ModbusMaster");
+                }
             }
             catch (Exception $e) 
             {       
@@ -301,7 +320,11 @@
             //FC 6
             try 
             {
-                $modbus->writeSingleRegister($UnitId, $Reference, array($Data), array("INT"));
+                if (IPS_SemaphoreEnter("ModbusMaster", 1000))
+                {
+                    $modbus->writeSingleRegister($UnitId, $Reference, array($Data), array("INT"));
+                    IPS_SemaphoreLeave("ModbusMaster");
+                }
             }
             catch (Exception $e) 
             {       
