@@ -115,7 +115,7 @@
             {
                 $modbus = new ModbusMasterUdp($this->ReadPropertyString("IPAddress"));
             } 
-            $count = 1; 
+            $count = 2; 
             if ( $this->ReadPropertyInteger("Poller") < 1000)
             {                
                 $count = 1000 / $this->ReadPropertyInteger("Poller");
