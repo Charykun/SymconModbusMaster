@@ -96,7 +96,8 @@
          * MBMaster_Update();
          */
         public function Update()
-        {                                                
+        {                
+            $this->Log('Update ...');
             $tstart = microtime(true);            
             include_once(__DIR__ . "/lib/ModbusMaster.php");
             $URL = "http://" . $this->ReadPropertyString("IPAddress");
@@ -223,11 +224,12 @@
                 } 
                 $this->SendDataToChildren(json_encode(Array("DataID" => "{449015FB-6717-4BB6-9F95-F69945CE1272}", "Buffer" => json_encode($data))));                       
                 $this->SetStatus(102); 
+                $this->Log(number_format(((microtime(true)-$tstart)*1000),2) . ' ms');
                 if ( $this->ReadPropertyInteger("Poller") < 1000)
                 {
                     IPS_Sleep($this->ReadPropertyInteger("Poller") - ((microtime(true)-$tstartfor) * 1000));           
                 }    
-                //$this->Log(number_format(((microtime(true)-$tstart)*1000),2) . ' ms');
+                $this->Log(number_format(((microtime(true)-$tstart)*1000),2) . ' ms');
             }
         }
         
