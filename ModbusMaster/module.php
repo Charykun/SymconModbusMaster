@@ -232,7 +232,11 @@
                 $this->Log(number_format(((microtime(true)-$tstart)*1000),2) . ' ms');
                 if ( $this->ReadPropertyInteger("Poller") < 1000)
                 {
-                    IPS_Sleep($this->ReadPropertyInteger("Poller") - ((microtime(true)-$tstartfor) * 1000));           
+                    $Sleep = $this->ReadPropertyInteger("Poller") - ((microtime(true)-$tstartfor) * 1000);
+                    if($Sleep > 0)
+                    {
+                        IPS_Sleep($Sleep);      
+                    }
                 }    
                 $this->Log(number_format(((microtime(true)-$tstart)*1000),2) . ' ms');
             }
