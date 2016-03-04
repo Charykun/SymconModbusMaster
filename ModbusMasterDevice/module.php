@@ -108,101 +108,93 @@
             //IPS_LogMessage("ReceiveData", utf8_decode($JSONString));  
             if ( $Data->DataID === "{449015FB-6717-4BB6-9F95-F69945CE1272}" )
             {
-                $Data = json_decode($Data->Buffer);
+                $Data = json_decode($Data->Buffer, true);
                 if ( $this->ReadPropertyBoolean("ReadOnly") )
                 {
                     if ($this->ReadPropertyInteger("DataType") === 0) 
                     {   
-                        foreach ($Data->FC2 as $Key => $Value)
+                        $Value = @$Data["FC2"][$this->ReadPropertyInteger("Address")];
+                        if(isset($Value))
                         {
-                            if ( $Key == $this->ReadPropertyInteger("Address") )
+                            if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
                             {
-                                if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
-                                {
-                                    SetValueBoolean($this->GetIDForIdent("Value"), $Value);
-                                }
-                            }                           
-                        }                                                  
+                                SetValueBoolean($this->GetIDForIdent("Value"), $Value);
+                            }
+                        }
                     }  
                     else 
                     {
-                        foreach ($Data->FC4 as $Key => $Bytes)
+                        $Bytes = @$Data["FC4"][$this->ReadPropertyInteger("Address")];
+                        if(isset($Bytes))
                         {
-                            if ( $Key == $this->ReadPropertyInteger("Address") )
+                            switch ($this->ReadPropertyInteger("DataType")) 
                             {
-                                switch ($this->ReadPropertyInteger("DataType")) 
-                                {
-                                    case 1: case 2: case 3:
-                                        $Value = PhpType::bytes2unsignedInt($Bytes);
-                                        if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
-                                        {
-                                            SetValueInteger($this->GetIDForIdent("Value"), $Value);
-                                        }
-                                    break;   
-                                    case 4: case 5: case 6: case 8:
-                                        $Value = PhpType::bytes2signedInt($Bytes);
-                                        if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
-                                        {
-                                            SetValueInteger($this->GetIDForIdent("Value"), $Value);
-                                        }
-                                    break;  
-                                    case 7: case 9:
-                                        $Value = PhpType::bytes2float($Bytes);
-                                        if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
-                                        {
-                                            SetValueFloat($this->GetIDForIdent("Value"), $Value);
-                                        }
-                                    break;                                     
-                                }                                
-                            }
-                        }    
+                                case 1: case 2: case 3:
+                                    $Value = PhpType::bytes2unsignedInt($Bytes);
+                                    if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
+                                    {
+                                        SetValueInteger($this->GetIDForIdent("Value"), $Value);
+                                    }
+                                break;   
+                                case 4: case 5: case 6: case 8:
+                                    $Value = PhpType::bytes2signedInt($Bytes);
+                                    if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
+                                    {
+                                        SetValueInteger($this->GetIDForIdent("Value"), $Value);
+                                    }
+                                break;  
+                                case 7: case 9:
+                                    $Value = PhpType::bytes2float($Bytes);
+                                    if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
+                                    {
+                                        SetValueFloat($this->GetIDForIdent("Value"), $Value);
+                                    }
+                                break;                                                             
+                            }   
+                        } 
                     }
                 }
                 else
                 {
                     if ($this->ReadPropertyInteger("DataType") === 0) 
                     {   
-                        foreach ($Data->FC1 as $Key => $Value)
+                        $Value = @$Data["FC1"][$this->ReadPropertyInteger("Address")];
+                        if(isset($Value))
                         {
-                            if ( $Key == $this->ReadPropertyInteger("Address") )
+                            if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
                             {
-                                if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
-                                {
-                                    SetValueBoolean($this->GetIDForIdent("Value"), $Value);
-                                }
-                            }                           
+                                SetValueBoolean($this->GetIDForIdent("Value"), $Value);
+                            }                          
                         }                                                  
                     }  
                     else 
                     {
-                        foreach ($Data->FC3 as $Key => $Bytes)
+                        $Bytes = @$Data["FC3"][$this->ReadPropertyInteger("Address")];
+                        if(isset($Bytes))
                         {
-                            if ( $Key == $this->ReadPropertyInteger("Address") )
+                            switch ($this->ReadPropertyInteger("DataType")) 
                             {
-                                switch ($this->ReadPropertyInteger("DataType")) 
-                                {
-                                    case 1: case 2: case 3:
-                                        $Value = PhpType::bytes2unsignedInt($Bytes);
-                                        if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
-                                        {
-                                            SetValueInteger($this->GetIDForIdent("Value"), $Value);
-                                        }
-                                    break;   
-                                    case 4: case 5: case 6: case 8:
-                                        $Value = PhpType::bytes2signedInt($Bytes);
-                                        if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
-                                        {
-                                            SetValueInteger($this->GetIDForIdent("Value"), $Value);
-                                        }
-                                    break;  
-                                    case 7: case 9:
-                                        $Value = PhpType::bytes2float($Bytes);
-                                        if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
-                                        {
-                                            SetValueFloat($this->GetIDForIdent("Value"), $Value);
-                                        }
-                                    break;                                     
-                                }                                
+                                case 1: case 2: case 3:
+                                    $Value = PhpType::bytes2unsignedInt($Bytes);
+                                    if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
+                                    {
+                                        SetValueInteger($this->GetIDForIdent("Value"), $Value);
+                                    }
+                                break;   
+                                case 4: case 5: case 6: case 8:
+                                    $Value = PhpType::bytes2signedInt($Bytes);
+                                    if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
+                                    {
+                                        SetValueInteger($this->GetIDForIdent("Value"), $Value);
+                                    }
+                                break;  
+                                case 7: case 9:
+                                    $Value = PhpType::bytes2float($Bytes);
+                                    if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
+                                    {
+                                        SetValueFloat($this->GetIDForIdent("Value"), $Value);
+                                    }
+                                break;                                                                     
                             }
                         }    
                     }                       
