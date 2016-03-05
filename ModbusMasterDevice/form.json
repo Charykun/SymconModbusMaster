@@ -17,7 +17,9 @@
             ]
         },
         { "name": "Address", "type": "NumberSpinner", "caption": "Address" },
-        { "name": "ReadOnly", "type": "CheckBox", "caption": "Read Only (Will read discrete inputs/input registers and disable writing)" }
+        { "name": "ReadOnly", "type": "CheckBox", "caption": "Read Only (Will read discrete inputs/input registers and disable writing)" },
+        { "name": "Math", "type": "ValidationTextBox", "caption": "Calculate (*10/5+3)" },
+        { "name": "SwitchDuration", "type": "NumberSpinner", "caption": "SwitchDuration (sec)" }
     ],
     "actions":
     [

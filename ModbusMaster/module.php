@@ -97,7 +97,7 @@
          */
         public function Update()
         {                
-            $this->Log('Update ...');
+//            $this->Log('Update ...');
             $tstart = microtime(true);            
             include_once(__DIR__ . "/lib/ModbusMaster.php");
             $URL = "http://" . $this->ReadPropertyString("IPAddress");
@@ -122,7 +122,7 @@
             }
             for ($index = 1; $index < $count; $index++) 
             { 
-                $this->Log('Update (' . $count . ') | ' . number_format(((microtime(true)-$tstart)*1000),2) . ' ms');
+//                $this->Log('Update (' . $count . ') | ' . number_format(((microtime(true)-$tstart)*1000),2) . ' ms');
                 $tstartfor = microtime(true);           
                 $data = array();
                 // FC 1 Rücklesen mehrerer digitaler Ausgänge 
@@ -132,7 +132,7 @@
                     {   
                         if (IPS_SemaphoreEnter("ModbusMaster", 1000))
                         {
-                            $this->Log('Update (FC1) | ' . number_format(((microtime(true)-$tstart)*1000),2) . ' ms');
+//                            $this->Log('Update (FC1) | ' . number_format(((microtime(true)-$tstart)*1000),2) . ' ms');
                             $recData = $modbus->readCoils($this->ReadPropertyInteger("DeviceID"), $this->ReadPropertyInteger("CoilsReference"), $this->ReadPropertyInteger("CoilsQuantity")); 
                             IPS_SemaphoreLeave("ModbusMaster");
                         }
@@ -157,7 +157,7 @@
                     {
                         if (IPS_SemaphoreEnter("ModbusMaster", 1000))
                         {
-                            $this->Log('Update (FC2) | ' . number_format(((microtime(true)-$tstart)*1000),2) . ' ms');
+//                            $this->Log('Update (FC2) | ' . number_format(((microtime(true)-$tstart)*1000),2) . ' ms');
                             $recData = $modbus->readInputDiscretes($this->ReadPropertyInteger("DeviceID"), $this->ReadPropertyInteger("DiscretesReference"), $this->ReadPropertyInteger("DiscretesQuantity")); 
                             IPS_SemaphoreLeave("ModbusMaster");
                         }
@@ -182,7 +182,7 @@
                     {
                         if (IPS_SemaphoreEnter("ModbusMaster", 1000))
                         {
-                            $this->Log('Update (FC3) | ' . number_format(((microtime(true)-$tstart)*1000),2) . ' ms');
+//                            $this->Log('Update (FC3) | ' . number_format(((microtime(true)-$tstart)*1000),2) . ' ms');
                             $recData = $modbus->readMultipleRegisters($this->ReadPropertyInteger("DeviceID"), $this->ReadPropertyInteger("RegistersReference"), $this->ReadPropertyInteger("RegistersQuantity")); 
                             IPS_SemaphoreLeave("ModbusMaster");
                         }
@@ -208,7 +208,7 @@
                     {
                         if (IPS_SemaphoreEnter("ModbusMaster", 1000))
                         {
-                            $this->Log('Update (FC4) | ' . number_format(((microtime(true)-$tstart)*1000),2) . ' ms');
+//                            $this->Log('Update (FC4) | ' . number_format(((microtime(true)-$tstart)*1000),2) . ' ms');
                             $recData = $modbus->readMultipleInputRegisters($this->ReadPropertyInteger("DeviceID"), $this->ReadPropertyInteger("InputRegistersReference"), $this->ReadPropertyInteger("InputRegistersQuantity")); 
                             IPS_SemaphoreLeave("ModbusMaster");
                         } 
@@ -229,7 +229,7 @@
                 } 
                 $this->SendDataToChildren(json_encode(Array("DataID" => "{449015FB-6717-4BB6-9F95-F69945CE1272}", "Buffer" => json_encode($data))));                       
                 $this->SetStatus(102); 
-                $this->Log(number_format(((microtime(true)-$tstart)*1000),2) . ' ms');
+//                $this->Log(number_format(((microtime(true)-$tstart)*1000),2) . ' ms');
                 if ( $this->ReadPropertyInteger("Poller") < 1000)
                 {
                     $Sleep = $this->ReadPropertyInteger("Poller") - ((microtime(true)-$tstartfor) * 1000);
@@ -238,9 +238,9 @@
                         IPS_Sleep($Sleep);      
                     }
                 }    
-                $this->Log(number_format(((microtime(true)-$tstart)*1000),2) . ' ms');
+//                $this->Log(number_format(((microtime(true)-$tstart)*1000),2) . ' ms');
             }
-            $this->Log('Update! | ' . number_format(((microtime(true)-$tstart)*1000),2) . ' ms');
+//            $this->Log('Update! | ' . number_format(((microtime(true)-$tstart)*1000),2) . ' ms');
         }
         
 

@@ -1,5 +1,5 @@
 <?php                                                                           
-    class ModBusMasterDevice extends IPSModule
+    class ModBusMasterDevice extends IPSModule                                  
     {
         /**
          * Log Message
@@ -21,6 +21,8 @@
             $this->RegisterPropertyInteger("DataType", 0);
             $this->RegisterPropertyInteger("Address", 0);
             $this->RegisterPropertyBoolean("ReadOnly", false);
+            $this->RegisterPropertyString("Math", "");
+            $this->RegisterPropertyInteger("SwitchDuration", 0);
             
             // Connect to IO or create it
             $this->ConnectParent("{13D6E3BC-9C30-4698-995F-4E566590CD84}");
@@ -39,39 +41,47 @@
                 case 0:
                     if ( $this->ReadPropertyBoolean("ReadOnly") )
                     {
-                        $this->RegisterVariableBoolean("Value", "Wert", "~Switch");
+                        $this->RegisterVariableBoolean("Value", "Value", "~Switch");
                         $this->DisableAction("Value");
                     }
                     else
                     {
-                        $this->RegisterVariableBoolean("Value", "Wert", "~Switch");
+                        $this->RegisterVariableBoolean("Value", "Value", "~Switch");
                         $this->EnableAction("Value");
                     }
                 break;    
                 case 7: case 9:           
                     if ( $this->ReadPropertyBoolean("ReadOnly") )
                     {
-                        $this->RegisterVariableFloat("Value", "Wert");
+                        $this->RegisterVariableFloat("Value", "Value");
                         $this->DisableAction("Value");
                     }
                     else
                     {
-                        $this->RegisterVariableFloat("Value", "Wert");
+                        $this->RegisterVariableFloat("Value", "Value");
                         $this->EnableAction("Value");
                     }
                 break;
                 default:
                     if ( $this->ReadPropertyBoolean("ReadOnly") )
                     {
-                        $this->RegisterVariableInteger("Value", "Wert");
+                        $this->RegisterVariableInteger("Value", "Value");
                         $this->DisableAction("Value");
                     }
                     else
                     {
-                        $this->RegisterVariableInteger("Value", "Wert", "Intensity.32767");
+                        $this->RegisterVariableInteger("Value", "Value", "Intensity.32767");
                         $this->EnableAction("Value");
                     }                    
                 break;    
+            }
+            if( ($this->ReadPropertyString("Math") != "") and ($this->ReadPropertyInteger("DataType") != 0) and $this->ReadPropertyBoolean("ReadOnly"))
+            {
+                $this->RegisterVariableFloat("ValueMath", "Result");
+            }
+            else
+            {
+                $this->UnregisterVariable("ValueMath");
             }
         }      
         
@@ -109,99 +119,98 @@
             if ( $Data->DataID === "{449015FB-6717-4BB6-9F95-F69945CE1272}" )
             {
                 $Data = json_decode($Data->Buffer, true);
-                if ( $this->ReadPropertyBoolean("ReadOnly") )
+                if ($this->ReadPropertyInteger("DataType") === 0)
                 {
-                    if ($this->ReadPropertyInteger("DataType") === 0) 
-                    {   
-                        $Value = @$Data["FC2"][$this->ReadPropertyInteger("Address")];
-                        if(isset($Value))
-                        {
-                            if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
-                            {
-                                SetValueBoolean($this->GetIDForIdent("Value"), $Value);
-                            }
-                        }
-                    }  
-                    else 
+                    if ( $this->ReadPropertyBoolean("ReadOnly") )
                     {
-                        $Bytes = @$Data["FC4"][$this->ReadPropertyInteger("Address")];
-                        if(isset($Bytes))
-                        {
-                            switch ($this->ReadPropertyInteger("DataType")) 
-                            {
-                                case 1: case 2: case 3:
-                                    $Value = PhpType::bytes2unsignedInt($Bytes);
-                                    if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
-                                    {
-                                        SetValueInteger($this->GetIDForIdent("Value"), $Value);
-                                    }
-                                break;   
-                                case 4: case 5: case 6: case 8:
-                                    $Value = PhpType::bytes2signedInt($Bytes);
-                                    if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
-                                    {
-                                        SetValueInteger($this->GetIDForIdent("Value"), $Value);
-                                    }
-                                break;  
-                                case 7: case 9:
-                                    $Value = PhpType::bytes2float($Bytes);
-                                    if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
-                                    {
-                                        SetValueFloat($this->GetIDForIdent("Value"), $Value);
-                                    }
-                                break;                                                             
-                            }   
-                        } 
+                        $Value = @$Data["FC2"][$this->ReadPropertyInteger("Address")];                        
                     }
-                }
-                else
-                {
-                    if ($this->ReadPropertyInteger("DataType") === 0) 
-                    {   
-                        $Value = @$Data["FC1"][$this->ReadPropertyInteger("Address")];
-                        if(isset($Value))
-                        {
-                            if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
-                            {
-                                SetValueBoolean($this->GetIDForIdent("Value"), $Value);
-                            }                          
-                        }                                                  
-                    }  
-                    else 
+                    else
                     {
-                        $Bytes = @$Data["FC3"][$this->ReadPropertyInteger("Address")];
-                        if(isset($Bytes))
+                        $Value = @$Data["FC1"][$this->ReadPropertyInteger("Address")];                        
+                    }
+                    if(isset($Value))
+                    {
+                        if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
                         {
-                            switch ($this->ReadPropertyInteger("DataType")) 
+                            SetValueBoolean($this->GetIDForIdent("Value"), $Value);
+                        }
+                    }                   
+                }
+                else 
+                {
+                    if ( $this->ReadPropertyBoolean("ReadOnly") )
+                    {
+                        $Bytes = @$Data["FC4"][$this->ReadPropertyInteger("Address")];                        
+                    }
+                    else
+                    {
+                        $Bytes = @$Data["FC3"][$this->ReadPropertyInteger("Address")];                        
+                    }                   
+                    if(isset($Bytes))
+                    {
+                        switch ($this->ReadPropertyInteger("DataType")) 
+                        {
+                            case 1: case 2: case 3:
+                                $Value = PhpType::bytes2unsignedInt($Bytes);
+                            break;   
+                            case 4: case 5: case 6: case 8:
+                                $Value = PhpType::bytes2signedInt($Bytes);
+                            break;  
+                            case 7: case 9:
+                                $Value = PhpType::bytes2float($Bytes);                                
+                            break;                                                             
+                        }
+                        if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
+                        {
+                            SetValue($this->GetIDForIdent("Value"), $Value);
+                        }                         
+                        if( ($this->ReadPropertyString("Math") != "") and $this->ReadPropertyBoolean("ReadOnly"))
+                        {                            
+                            $Value = $this->Math($Value . $this->ReadPropertyString("Math"));
+                            if ( GetValue($this->GetIDForIdent("ValueMath")) <> $Value )
                             {
-                                case 1: case 2: case 3:
-                                    $Value = PhpType::bytes2unsignedInt($Bytes);
-                                    if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
-                                    {
-                                        SetValueInteger($this->GetIDForIdent("Value"), $Value);
-                                    }
-                                break;   
-                                case 4: case 5: case 6: case 8:
-                                    $Value = PhpType::bytes2signedInt($Bytes);
-                                    if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
-                                    {
-                                        SetValueInteger($this->GetIDForIdent("Value"), $Value);
-                                    }
-                                break;  
-                                case 7: case 9:
-                                    $Value = PhpType::bytes2float($Bytes);
-                                    if ( GetValue($this->GetIDForIdent("Value")) <> $Value )
-                                    {
-                                        SetValueFloat($this->GetIDForIdent("Value"), $Value);
-                                    }
-                                break;                                                                     
+                                SetValue($this->GetIDForIdent("ValueMath"), $Value);
                             }
-                        }    
-                    }                       
-                }                                         
+                        }                        
+                                            
+                    }                    
+                }            
             }
         }
         
+        private function Math($Str)
+        {
+            $v=array();
+            $v[0]=$v[1]=$op=null;
+            if(preg_match_all('#[+*/^-]|\-?\d+#',$Str,$m))
+            {
+                foreach($m[0] as $tk)
+                {
+                    switch($tk)
+                    {
+                        case '+': case '-': case '*': case '/': case '^': $op=$tk; break;
+                        default:
+                            $v[is_null($op) && is_null($v[0])?0:1]=$tk;
+                            if(!is_null($v[1]))
+                            {
+                                switch($op)
+                                {
+                                    case '+': $v[0] = $v[0] + $v[1]; break;
+                                    case '-': $v[0] = $v[0] - $v[1]; break;
+                                    case '*': $v[0] = $v[0] * $v[1]; break;
+                                    case '/': $v[0] = $v[0] / $v[1]; break;
+                                    case '^': $v[0] = $v[0] ^ $v[1]; break;
+                                }
+                            }
+                        break;
+                    }
+                }
+            }
+            return $v[0];
+        }
+
+
         /**
          * ModBusMaster_WriteCoil
          * @param boolean $Value
@@ -216,7 +225,12 @@
             }            
             if ($this->ReadPropertyInteger("DataType") === 0)
             {       
-                $resultat = $this->SendDataToParent(json_encode(Array("DataID" => "{A3419A88-C83B-49D7-8706-D3AFD596DFBB}", "FC" => "5", "Address" => $this->ReadPropertyInteger("Address"), "Data" => $Value)));  
+                $resultat = $this->SendDataToParent(json_encode(Array("DataID" => "{A3419A88-C83B-49D7-8706-D3AFD596DFBB}", "FC" => "5", "Address" => $this->ReadPropertyInteger("Address"), "Data" => $Value))); 
+                if($this->ReadPropertyInteger("SwitchDuration") > 0)
+                {
+                    $this->RegisterTimer("Poller", 0, "ModBusMaster_WriteCoil(\$_IPS['TARGET'], false);IPS_SetEventActive(\$_IPS['EVENT'],false);"); 
+                    $this->SetTimerInterval("Poller", $this->ReadPropertyInteger("SwitchDuration") * 1000);
+                }
                 return $resultat;
             }
             else 
