@@ -172,8 +172,7 @@
                             {
                                 SetValue($this->GetIDForIdent("ValueMath"), $Value);
                             }
-                        }                        
-                                            
+                        }                                                            
                     }                    
                 }            
             }
@@ -237,10 +236,9 @@
                         IPS_SetName($eid, "SwitchDuration");
                         IPS_SetHidden($eid, true);
                         IPS_SetEventScript($eid, "ModBusMaster_WriteCoil(\$_IPS['TARGET'], false);IPS_SetEventActive(\$_IPS['EVENT'],false);");
-                    }
-                    IPS_SetEventCyclic($eid, 1, 0, 0, 0, 0, 0);
-                    IPS_SetEventCyclicDateBounds($eid, time(), 0);
-                    IPS_SetEventCyclicTimeBounds($eid, time() + $this->ReadPropertyInteger("SwitchDuration"), 0 );
+                    }                    
+                    IPS_SetEventCyclicTimeFrom($eid, date("H"), date("i"), date("s"));
+                    IPS_SetEventCyclic($eid, 0, 0, 0, 0, 1, $this->ReadPropertyInteger("SwitchDuration"));
                     IPS_SetEventActive($eid, true);
                 }
                 return $resultat;
