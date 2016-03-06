@@ -210,7 +210,6 @@
             return $v[0];
         }
 
-
         /**
          * ModBusMaster_WriteCoil
          * @param boolean $Value
@@ -226,10 +225,23 @@
             if ($this->ReadPropertyInteger("DataType") === 0)
             {       
                 $resultat = $this->SendDataToParent(json_encode(Array("DataID" => "{A3419A88-C83B-49D7-8706-D3AFD596DFBB}", "FC" => "5", "Address" => $this->ReadPropertyInteger("Address"), "Data" => $Value))); 
-                if($this->ReadPropertyInteger("SwitchDuration") > 0)
+                if($this->ReadPropertyInteger("SwitchDuration") > 0 and $Value)
                 {
-                    $this->RegisterTimer("Poller", 0, "ModBusMaster_WriteCoil(\$_IPS['TARGET'], false);IPS_SetEventActive(\$_IPS['EVENT'],false);"); 
-                    $this->SetTimerInterval("Poller", $this->ReadPropertyInteger("SwitchDuration") * 1000);
+                    $eid = @IPS_GetObjectIDByIdent("SwitchDuration", $this->InstanceID);
+                    if($eid === false) { $eid = 0; } else if(IPS_GetEvent($eid)['EventType'] <> 1) { IPS_DeleteEvent($eid); $eid = 0; }
+                    if ($eid == 0) 
+                    {
+                        $eid = IPS_CreateEvent(1);
+                        IPS_SetParent($eid, $this->InstanceID);
+                        IPS_SetIdent($eid, "SwitchDuration");
+                        IPS_SetName($eid, "SwitchDuration");
+                        IPS_SetHidden($eid, true);
+                        IPS_SetEventScript($eid, "ModBusMaster_WriteCoil(\$_IPS['TARGET'], false);IPS_SetEventActive(\$_IPS['EVENT'],false);");
+                    }
+                    IPS_SetEventCyclic($eid, 1, 0, 0, 0, 0, 0);
+                    IPS_SetEventCyclicDateBounds($eid, time(), 0);
+                    IPS_SetEventCyclicTimeBounds($eid, time() + $this->ReadPropertyInteger("SwitchDuration"), 0 );
+                    IPS_SetEventActive($eid, true);
                 }
                 return $resultat;
             }
@@ -238,8 +250,7 @@
                 trigger_error("Invalid DataType!", E_USER_WARNING);
             }
         }
-        
-        
+               
         /**
          * ModBusMaster_WriteRegister
          * @param integer $Value
@@ -261,6 +272,5 @@
                 $resultat = $this->SendDataToParent(json_encode(Array("DataID" => "{A3419A88-C83B-49D7-8706-D3AFD596DFBB}", "FC" => "6", "Address" => $this->ReadPropertyInteger("Address"), "Data" => $Value)));  
                 return $resultat;               
             }
-        }       
-        
+        }        
     }
