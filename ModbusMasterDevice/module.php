@@ -183,7 +183,7 @@
         {
             $v=array();
             $v[0]=$v[1]=$op=null;
-            if(preg_match_all('#[+*/^-]|\-?\d+#',$Str,$m))
+            if(preg_match_all('#[+*/^-]|\-?[\d,.]+#',$Str,$m))
             {
                 foreach($m[0] as $tk)
                 {
